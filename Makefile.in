@@ -1,0 +1,75 @@
+# Copyright (C) 2018 Jerome Migne
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+CXX = g++
+
+STD = -std=c++11
+
+CPPFLAGS =
+
+CXXFLAGS = $(STD) -Wall -Wpedantic -Wno-parentheses -Werror
+
+BUILDDIR_ROOT = build
+
+ifeq ($(strip $(DEBUG)),)
+	DEBUG=0
+endif
+ifeq ($(DEBUG), 0)
+	CPPFLAGS += -DNDEBUG
+	CXXFLAGS += -O3
+	BUILDDIR = $(BUILDDIR_ROOT)/release
+else
+	CXXFLAGS += -g3
+	BUILDDIR = $(BUILDDIR_ROOT)/debug
+endif
+
+LDLIBS =
+
+#---------------------------------------------------------
+
+.PHONY: all clean_bin clean rebuild test
+
+all: clean_bin $(BIN)
+
+rebuild:
+	@make clean && make
+
+clean:
+	rm -f $(BUILDDIR)/*
+
+clean_bin:
+	rm -f $(BIN)
+
+$(BIN): $(BUILDDIR)/$(BIN)
+	cp $(BUILDDIR)/$(BIN) $(BIN)
+
+$(BUILDDIR)/$(BIN): $(addprefix $(BUILDDIR)/,$(SOURCES:.cpp=.o))
+	$(CXX) -o $@ $^ $(LDLIBS)
+
+$(BUILDDIR)/%.d: %.cpp
+	@echo "Generating dependencies for" $<; \
+	mkdir -p $(BUILDDIR); \
+	set -e; rm -f $@; \
+	$(CXX) -MM $(CPPFLAGS) $(STD) $< > $@.temp; \
+	cp $@.temp $@.temp.1; \
+	sed -i 's,\($*\)\.o[ :]*,$@ : ,g' $@.temp.1; \
+	sed -i 's,\($*\)\.o[ :]*,$(BUILDDIR)/\1.o : ,g' $@.temp; \
+	sed -i '$ a \\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $(basename $@).o -c $<' $@.temp; \
+	cat $@.temp $@.temp.1 > $@; \
+	rm -f $@.temp*
+
+ifeq (,$(filter $(MAKECMDGOALS), clean rebuild))
+-include $(addprefix $(BUILDDIR)/,$(SOURCES:.cpp=.d))
+endif
