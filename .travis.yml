@@ -1,0 +1,18 @@
+# Run unit tests in a docker container including boost at least 1.59, because
+# unit tests of this project use boost data test availabe from boost version
+# 1.59, and the latest boost version available in deb package for the Ubuntu of
+# travis-ci platform is 1.55.
+
+language: cpp
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+    # source: https://github.com/wangqun2046/docker-boost
+  - docker pull polyphylla/boost
+
+script:
+  - docker run --mount=type=bind,source=${TRAVIS_BUILD_DIR},destination=/usr/local/src/test --workdir=/usr/local/src/test polyphylla/boost make test
