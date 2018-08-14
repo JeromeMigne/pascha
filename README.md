@@ -1,5 +1,7 @@
 # Pascha
 
+[![Build Status](https://travis-ci.org/JeromeMigne/pascha.svg?branch=master)](https://travis-ci.org/JeromeMigne/pascha)
+
 Compute easter date for a given year from 1583, using Lilius/Clavius algorithm.<br>
 Actually the Gregorian easter Sunday date.
 
