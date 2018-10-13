@@ -12,7 +12,7 @@ just after; where the days of moon are not determined by astronomical
 observations but by a computed calendar.
 
 In the context of the Gregorian calendar reform, mathematician Clavius
-established, from previous works of astronomer LiLius, the method for computing
+established, from previous works of astronomer Lilius, the method for computing
 the easter date.
 
 This program, written in C++11, use this algorithm to compute the easter date
@@ -21,6 +21,6 @@ The Gregorian calendar was instituted in October 1582, and easter falls either
 in March or in April, so the first year for which a Gregorian easter date can
 be computed is 1583.
 
-For unit tests, boost version 1.59 or higher is needed.
+For unit tests, boost version 1.59 or higher is required.
 
 Licensed under GPLv3.
